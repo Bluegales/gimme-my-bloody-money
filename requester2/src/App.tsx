@@ -3,6 +3,7 @@ import './App.css';
 
 import { IDKitWidget, VerificationLevel } from '@worldcoin/idkit'
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react'
+import { transferTokens } from './ccip/ccip/src/transfer-token-function';
 // import { decodeAbiParameters } from 'viem'
 
 // 1. Get projectId

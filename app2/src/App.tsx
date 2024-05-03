@@ -24,6 +24,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <div>
+        <center>
         <h1>GiveMeMyBloody.Money</h1>
         <ConnectWallet setAccount={setAccount} />
         <Routes>
@@ -35,6 +36,7 @@ const App: React.FC = () => {
           ) : null} />
           <Route path="/pay" element={<PaymentReceiver account={account} setAccount={setAccount} />} />
         </Routes>
+        </center>
       </div>
     </Router>
   );

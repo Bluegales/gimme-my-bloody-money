@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ConnectWallet from './ConnectWallet';
 import PaymentLinkForm from './PaymentLinkForm';
 import PaymentReceiver from './PaymentReceiver';
+import './App.css'
 
 const App = () => {
   const [account, setAccount] = useState('');

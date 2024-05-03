@@ -8,7 +8,17 @@ RPC="https://ethereum-sepolia-rpc.publicnode.com"
 
 none:
 
+deploy-gatekeeper:
+	forge script DeployGatekeeper --fork-url ${RPC} --broadcast --private-key $(PRIVATE_KEY)
+set-maci-gatekeeper:
+	forge script SetMaciGatekeeper --fork-url ${RPC} --broadcast --private-key $(PRIVATE_KEY)
+
+test-register:
+	forge test --match-test "testRepuationRegister" -vvvv --fork-url ${RPC} 
+test-vote:
+	forge test --match-test "testRepuation" -vvvv
 test-worldcoin:
 	forge test --match-test "testVerification" --fork-url ${RPC} -vvvv
 
-.PHONY: test-worldcoin
+.PHONY: test
+

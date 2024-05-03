@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
 
 // Declaring a module to augment the Window type for TypeScript
 declare global {
@@ -58,7 +59,7 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ setAccount }) => {
 
   return (
     <div>
-      <button onClick={connectWalletHandler}>Connect Wallet</button>
+      <button className="button" onClick={connectWalletHandler}>Connect Wallet</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );

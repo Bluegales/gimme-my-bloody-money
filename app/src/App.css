@@ -1,5 +1,117 @@
+/* General Styles */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: 'Londrina Solid', cursive;
+  background-color: rgb(225, 215, 213);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+  position: relative;
+  width: auto;
+  max-width: 600px; 
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  justify-content: center;
+}
+
+.eth-symbol {
+  font-family: 'Londrina Solid', cursive;
+  font-size: 20px;
+  margin-right: 5px;
+}
+
+.input, .button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+.input {
+  width: 235px;
+  border: 1px solid #ccc;
+  text-align: center; /* Center text inside the input field */
+}
+
+
+.button {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #6495ED; /* Example blue color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #4169E1; /* Darker blue on hover */
+}
+
+.button:hover {
+  background-color: #4169E1; /* Darker shade when hovered */
+}
+
+.wallet-address {
+  color: grey;
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+.headline {
+  font-size: 42px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.noun-icon {
+  margin-bottom: 20px;
+  width: 300px;
+  height: auto;
+}
+
+.howto {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.howto p {
+  margin: 4px 0; /* Adds a small margin between lines for better readability */
+  font-size: 16px; /* Adjust font size if necessary */
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 600px) {
+  .input, .button {
+      width: 90%; /* Adjust width for smaller screens */
+  }
+  .headline, .howto p {
+      font-size: 18px; /* Adjust font size for readability on small devices */
+  }
+}
+
+/* Original App Styles Adjusted for New Theme */
 .App {
   text-align: center;
+  width: 100%;
 }
 
 .App-logo {
@@ -9,7 +121,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+      animation: App-logo-spin infinite 20s linear;
   }
 }
 
@@ -30,9 +142,9 @@
 
 @keyframes App-logo-spin {
   from {
-    transform: rotate(0deg);
+      transform: rotate(0deg);
   }
   to {
-    transform: rotate(360deg);
+      transform: rotate(360deg);
   }
 }

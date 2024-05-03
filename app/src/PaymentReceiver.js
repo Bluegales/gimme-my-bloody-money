@@ -19,7 +19,7 @@ const PaymentReceiver = ({ account, setAccount }) => {
     const query = new URLSearchParams(window.location.search);
     setDetails({
       wallet: query.get('wallet'),
-      network: query.get('network'),
+      chainId: query.get('chain-id'),
       amount: query.get('amount'),
     });
   }, []);
@@ -29,9 +29,16 @@ const PaymentReceiver = ({ account, setAccount }) => {
       setError('Please install MetaMask to proceed with the payment.');
       return;
     }
-    if (!account) {
-      setError('Please connect your wallet.');
-      return;
+    // is this needed?
+    // if (!account) {
+    //   setError('Please connect your wallet.');
+    //   return;
+    // }
+    if (window.ethereum.networkVersion !== details.chainId) {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: details.chainId }]
+      });
     }
   
     try {
@@ -42,8 +49,8 @@ const PaymentReceiver = ({ account, setAccount }) => {
   
       const transaction = {
         to: details.wallet,
-        value: parseEther(details.amount.toString()), // Using the manually defined parseEther
-        chainId: 1 // Assuming Ethereum Mainnet for demonstration
+        value: parseEther(details.amount.toString()),
+        chainId: details.chainId
       };
   
       const txResponse = await signer.sendTransaction(transaction);

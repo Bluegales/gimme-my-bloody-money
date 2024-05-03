@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './App.css'; // Ensure your CSS is in App.css and it's imported in your root component
 
 const networks = {
-  mainnet: 'Mainnet',
-  sepolia: 'Sepolia',
-  goerli: 'Goerli'
+  '0x1': 'Mainnet',
+  '0xaa36a7': 'Sepolia',
+  '0x14a34': 'Base Sepolia'
 };
 
 const PaymentLinkForm = ({ account, connectWallet }) => {
   const [walletAddress, setWalletAddress] = useState('');
-  const [network, setNetwork] = useState('sepolia');
+  const [network, setNetwork] = useState('0x1');
   const [amountETH, setAmountETH] = useState('');
   const [amountUSD, setAmountUSD] = useState('');
   const [link, setLink] = useState('');
@@ -45,7 +45,7 @@ const PaymentLinkForm = ({ account, connectWallet }) => {
 
   const generateLink = () => {
     const baseUrl = 'http://localhost:3000/pay';
-    const newLink = `${baseUrl}?wallet=${walletAddress}&network=${network}&amount=${amountETH}`;
+    const newLink = `${baseUrl}?wallet=${walletAddress}&chain-id=${network}&amount=${amountETH}`;
     setLink(newLink);
   };
 

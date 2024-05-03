@@ -11,6 +11,7 @@ interface PaymentReceiverProps {
 interface PaymentDetails {
   wallet: string | null;
   chainId: string | null;
+  currency: string | null;
   amount: string | null;
 }
 
@@ -19,6 +20,7 @@ const query = new URLSearchParams(window.location.search);
 const params = {
   wallet: query.get('wallet'),
   chainId: query.get('chain-id'),
+  currency: query.get('currency'),
   amount: query.get('amount'),
 };
 
@@ -57,31 +59,33 @@ const parseEther = (value: string): string => {
 };
 
 const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }) => {
-  const [details, setDetails] = useState<PaymentDetails>({
-    wallet: params.wallet,
-    chainId: params.chainId,
-    amount: params.amount,
-  });
+  // const [details, setDetails] = useState<PaymentDetails>({
+  //   wallet: params.wallet,
+  //   chainId: params.chainId,
+  //   currency: params.currency,
+  //   amount: params.amount,
+  // });
   const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    setDetails({
-      wallet: query.get('wallet'),
-      chainId: query.get('chain-id'),
-      amount: query.get('amount'),
-    });
-  }, []);
+  // useEffect(() => {
+  //   setDetails({
+  //     wallet: query.get('wallet'),
+  //     chainId: query.get('chain-id'),
+  //     currency: query.get('currency'),
+  //     amount: query.get('amount'),
+  //   });
+  // }, []);
 
   const handlePay = async () => {
     if (!window.ethereum) {
       setError('Please install MetaMask to proceed with the payment.');
       return;
     }
-    if (window.ethereum.networkVersion !== details.chainId) {
+    if (window.ethereum.networkVersion !== params.chainId) {
       try {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: details.chainId }]
+          params: [{ chainId: params.chainId }]
         });
       } catch (error: any) {
         setError(`Error switching network: ${error.message}`);
@@ -94,9 +98,9 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     //   const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner();
       const transaction = {
-        to: details.wallet!,
-        value: parseEther(details.amount!),
-        chainId: parseInt(details.chainId!)
+        to: params.wallet!,
+        value: parseEther(params.amount!),
+        chainId: parseInt(params.chainId!)
       };
       const txResponse = await signer.sendTransaction(transaction);
       console.log('Transaction sent:', txResponse);
@@ -110,9 +114,9 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     <div>
       {/* <w3m-button /> */}
       <h1>Payment Details</h1>
-      <p>Wallet Address: {details.wallet}</p>
-      <p>Network: {details.chainId}</p>
-      <p>Amount: {details.amount} ETH</p>
+      <p>Wallet Address: {params.wallet}</p>
+      <p>Network: {params.chainId}</p>
+      <p>Amount: {params.amount} ETH</p>
       <button onClick={handlePay}>Pay</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>

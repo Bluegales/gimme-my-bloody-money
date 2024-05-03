@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { chains } from './chains';
+import { IDKitWidget } from "@worldcoin/idkit";
 
 interface PaymentLinkFormProps {
   account: string;
   // connectWallet: () => void;
 }
+
+const onSuccess = (result: any) => {
+  console.log("Proof received from IDKit:\n", JSON.stringify(result));
+  // const unpackedProof = decodeAbiParameters([{ type: 'uint256[8]' }], result.proof)[0]
+  // console.log(unpackedProof)
+  // console.log(result)
+  // This is where you should perform frontend actions once a user has been verified, such as redirecting to a new page
+  window.alert("Successfully verified with World ID! Your nullifier hash is: " + result.nullifier_hash);
+};
 
 const networks: { [key: string]: string } = {
   '0x1': 'Mainnet',
@@ -16,6 +26,7 @@ const networks: { [key: string]: string } = {
 const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
   const [walletAddress, setWalletAddress] = useState<string>('');
   const [network, setNetwork] = useState<string>('0x1');
+  const [currency, setCurrency] = useState<string>('ETH');
   const [amountETH, setAmountETH] = useState<string>('');
   const [amountUSD, setAmountUSD] = useState<string>('');
   const [link, setLink] = useState<string>('');
@@ -30,6 +41,10 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
 
   const handleNetworkChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setNetwork(event.target.value);
+  };
+
+  const handleCurrencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrency(event.target.value);
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +66,7 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
 
   const generateLink = () => {
     const baseUrl = 'http://localhost:3000/pay';
-    const newLink = `${baseUrl}?wallet=${walletAddress}&chain-id=${network}&amount=${amountETH}`;
+    const newLink = `${baseUrl}?wallet=${walletAddress}&chain-id=${network}&currency=${currency}&amount=${amountETH}`;
     setLink(newLink);
   };
 
@@ -71,6 +86,22 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
         </>
       ) : (
         <>
+        <IDKitWidget
+          app_id="app_staging_51c06a1df3fa4b5f004db3fb8dfe6569"
+          action="test"
+          signal="0x11118B057bC0F7cBCF85f1e4d6B61CD5fFB22773"
+          // On-chain only accepts Orb verifications
+          // verification_level={VerificationLevel.Orb}
+          // handleVerify={handleProof}
+          onSuccess={onSuccess}>
+          {({ open }) => (
+            <button
+              onClick={open}
+            >
+              Verify with World ID
+            </button>
+          )}
+      </IDKitWidget>
           <div className="input-group">
             <span className="eth-symbol">Ξ</span>
             <input
@@ -85,6 +116,10 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
             {Object.entries(networks).map(([key, name]) => (
               <option key={key} value={key}>{name}</option>
             ))}
+          </select>
+          <select value={currency} onChange={handleCurrencyChange}>
+            <option value="ETH">ETH</option>
+            <option value="USDC">USDC</option>
           </select>
           <input
             type="number"

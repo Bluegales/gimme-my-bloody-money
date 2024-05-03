@@ -2,8 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Test, console} from "forge-std/Test.sol";
-import {AddressToString} from "../src/helpers/AddressToString.sol";
-using AddressToString for address;
+import {ToSignal} from "../src/helpers/AddressToSignal.sol";
 
 contract WorldCoinExample is Test {
 
@@ -12,7 +11,7 @@ contract WorldCoinExample is Test {
     function testAddressToString() public view {
         address addr = address(0x1337);
         console.log(addr);
-        string memory addrString = addr.toString();
+        string memory addrString = ToSignal.Vote(addr);
         console.log(addrString);
     }
 }

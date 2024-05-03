@@ -12,13 +12,11 @@ contract SignUpWorldcoinGatekeeperTest is Test {
     function setUp() public {
         address worldId = 0x42FF98C4E85212a5D31358ACbFe76a621b50fC02;
         string memory appId = "app_staging_8ed9ea69fa7c731c134b1ed124d06252";
-        string memory action = "test";
         int32 reputationPositiveMultiplier = 1;
         int32 reputationNegativeMultiplier = 5;
         reputation = new Reputation(
             worldId,
             appId,
-            action,
             reputationPositiveMultiplier,
             reputationNegativeMultiplier
         );

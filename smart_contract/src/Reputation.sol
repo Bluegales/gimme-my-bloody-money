@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import {IWorldID} from "./IWorldID.sol";
 import {ByteHasher} from "./helpers/ByteHasher.sol";
 using ByteHasher for bytes;
+import {ToSignal} from "../src/helpers/AddressToSignal.sol";
 
 contract Reputation {
     error AlreadyVoted();
@@ -29,11 +30,11 @@ contract Reputation {
 
     /// @param _worldId The address of the WorldIDRouter that will verify the proofs
     /// @param _appId The World ID App ID (from Developer Portal)
-    /// @param _action The World ID Action (from Developer Portal)
+    /// @param _reputationPositiveMultiplier TODO
+    /// @param _reputationNegativeMultiplier TODO
     constructor(
         address _worldId,
         string memory _appId,
-        string memory _action,
         int32 _reputationPositiveMultiplier,
         int32 _reputationNegativeMultiplier
     ) {
@@ -57,14 +58,16 @@ contract Reputation {
         uint256 nullifierHash,
         uint256[8] calldata proof
     ) external {
-        // worldId.verifyProof(
-        //     root,
-        //     groupId, // set to "1" in the constructor
-        //     abi.encodePacked(signal).hashToField(),
-        //     nullifierHash,
-        //     externalNullifierHash,
-        //     proof
-        // );
+        uint256 externalNullifierHash = abi
+            .encodePacked(appId, "register").hashToField();
+        worldId.verifyProof(
+            root,
+            groupId, // set to "1" in the constructor
+            abi.encodePacked(signal).hashToField(),
+            nullifierHash,
+            externalNullifierHash,
+            proof
+        );
 
         // If the worldIdUser has registed an account already, copy reputation score to new account
         address oldAccount = nullifierHashesAddress[nullifierHash];
@@ -91,7 +94,7 @@ contract Reputation {
         uint256[8] calldata proof
     ) external {
         uint256 externalNullifierHash = abi
-            .encodePacked(appId, account).hashToField();
+            .encodePacked(appId, ToSignal.Vote(account)).hashToField();
         // worldId.verifyProof(
         //     root,
         //     groupId, // set to "1" in the constructor

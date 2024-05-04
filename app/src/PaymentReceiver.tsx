@@ -245,29 +245,32 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
 
   return (  
     <div>
+      <p>--------------------</p>
       <h2>Payment Details</h2> 
-      
+      {/* Verify Personhood */}
+      <div> {isVerified === true && (
+        <div><img src="verified.png" alt="Verified Human" width="100px"></img></div>
+      )} </div>
       <div>
         {reputationScore! < 0 && (
           <div>
-            <p>❌ Spam, bad reputation. Not very nounish.</p>
+            <p>❌ Potential Phishing. Bad reputation.❌</p>
           </div>
         )}
         {reputationScore == 0 && (
           <div>
-            <p>🟠 SUS, no reputation. Make sure you know the person</p>
+            <p>🟠 No reputation. Make sure you know the person 🟠</p>
           </div>
         )}
         {reputationScore! > 0 && (
           <div>
-            <p>✅ Looks great. Good reputation. Trustworthy requester. Grade A Nouner.</p>
+            <p>✅ Looks great. Good reputation. Trustworthy requester. Grade A Nouner. ✅</p>
           </div>
         )}
       </div>
       <p>Wallet Address: {params.wallet}</p>
-      <p>Network: {destChain.name}</p>
-      <p>Currenct: {params.currency}</p>
-      <p>Amount: {decimalAmount} </p>
+      <p><pre> {decimalAmount} {params.currency}  ({destChain.name})</pre> </p>
+      <p>--------------------</p>
       <button
         className="button_pay"
         onClick={handlePay}

@@ -116,10 +116,6 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
               <option key={key} value={key}>{name}</option>
             ))}
           </select>
-          <select className="input" value={currency} onChange={handleCurrencyChange}>
-            <option value="ETH">ETH</option>
-            <option value="USDC">USDC</option>
-          </select>
           <input
             type="number"
             className="input"
@@ -127,6 +123,10 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
             onChange={handleAmountChange}
             placeholder="Amount in ETH"
           />
+          <select className="button_currency" value={currency} onChange={handleCurrencyChange}>
+            <option value="ETH">ETH</option>
+            <option value="USDC">USDC</option>
+          </select>
           <p className="wallet-address">Amount in USD: ${amountUSD}</p>
           <button className="button" onClick={generateLink}>Generate Link</button>
           {link && (

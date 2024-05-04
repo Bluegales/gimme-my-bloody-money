@@ -26,11 +26,12 @@ const App: React.FC = () => {
       <div>
         <center>
         <h1>GiveMeMyBloody.Money</h1>
+        <img src="./noun_gun.png" width="200"></img>
         <ConnectWallet setAccount={setAccount} />
         <Routes>
           <Route path="/" element={account ? (
             <>
-              <p>Connected Account: {account}</p>
+              {/* <p>Connected Account: {account}</p> */}
               <PaymentLinkForm account={account} />
             </>
           ) : null} />

@@ -31,7 +31,7 @@ export const chains = [
         name: 'OP Mainnet',
         ccipName: 'optimismMainnet',
         currency: 'ETH',
-        rpcUrl: '',
+        rpcUrl: 'https://mainnet.optimism.io',
         USDC: '0x0b2c639c533813f4aa9d7837caf62653d097ff85'
     },
     {
@@ -39,7 +39,7 @@ export const chains = [
         name: 'Arbitrum One',
         ccipName: 'arbitrumMainnet',
         currency: 'ETH',
-        rpcUrl: '',
+        rpcUrl: 'https://arb1.arbitrum.io/rpc',
         USDC: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
     },
     {
@@ -47,7 +47,7 @@ export const chains = [
         name: 'Base Sepolia',
         ccipName: 'baseSepolia',
         currency: 'ETH',
-        rpcUrl: '',
+        rpcUrl: 'https://sepolia.base.org',
         USDC: '0x036CbD53842c5426634e7929541eC2318f3dCF7e'
     },
     {
@@ -55,7 +55,7 @@ export const chains = [
         name: 'Sepolia',
         ccipName: 'ethereumSepolia',
         currency: 'ETH',
-        rpcUrl: '',
+        rpcUrl: 'https://rpc.sepolia.org',
         USDC: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'
     }
 ]

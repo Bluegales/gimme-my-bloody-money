@@ -58,16 +58,16 @@ contract Reputation {
         uint256 nullifierHash,
         uint256[8] calldata proof
     ) external {
-        uint256 externalNullifierHash = abi
-            .encodePacked(appId, "register").hashToField();
-        worldId.verifyProof(
-            root,
-            groupId, // set to "1" in the constructor
-            abi.encodePacked(signal).hashToField(),
-            nullifierHash,
-            externalNullifierHash,
-            proof
-        );
+        // uint256 externalNullifierHash = abi
+        //     .encodePacked(appId, "register").hashToField();
+        // worldId.verifyProof(
+        //     root,
+        //     groupId, // set to "1" in the constructor
+        //     abi.encodePacked(signal).hashToField(),
+        //     nullifierHash,
+        //     externalNullifierHash,
+        //     proof
+        // );
 
         // If the worldIdUser has registed an account already, copy reputation score to new account
         address oldAccount = nullifierHashesAddress[nullifierHash];

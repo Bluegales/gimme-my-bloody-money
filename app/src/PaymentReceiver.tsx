@@ -12,14 +12,38 @@ interface PaymentReceiverProps {
 
 const query = new URLSearchParams(window.location.search);
 
-const onSuccess = (result: any) => {
-  console.log("Proof received from IDKit:\n", JSON.stringify(result));
-  // const unpackedProof = decodeAbiParameters([{ type: 'uint256[8]' }], result.proof)[0]
-  // console.log(unpackedProof)
-  // console.log(result)
-  // This is where you should perform frontend actions once a user has been verified, such as redirecting to a new page
-  window.alert("Successfully verified with World ID! Your nullifier hash is: " + result.nullifier_hash);
-};
+// async function executeContractFunction() {
+//   try {
+//     // Ensure the signer is connected
+//     const signer = provider.getSigner();
+
+//     // Initialize the contract
+//     const contract = new ethers.Contract(
+//       process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+//       abi,
+//       signer
+//     );
+
+//     // Call the smart contract function
+//     const tx = await contract.verifyAndExecute(
+//       account.address!,
+//       BigInt(proof!.merkle_root).toString(),
+//       BigInt(proof!.nullifier_hash).toString(),
+//       decodeAbiParameters(
+//         parseAbiParameters('uint256[8]'),
+//         proof!.proof
+//       )[0]
+//     );
+
+//     // Wait for the transaction to be mined
+//     await tx.wait();
+//     setDone(true);
+//   } catch (error) {
+//     // Basic error handling; adapt as necessary for your use case
+//     console.error(error);
+//     throw new Error(error.reason || "Failed to execute the contract function.");
+//   }
+// }
 
 const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }) => {
   const [error, setError] = useState<string>('');
@@ -34,6 +58,22 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
   };
   const destChain = chains.find(chain => chain.chainId === Number(params.chainId))!;
   const destChainProvider = new ethers.JsonRpcProvider(destChain.rpcUrl);
+
+  const checkWorldIdVerified = async () => {
+    const baseSepolia = chains.find(chain => chain.chainId === 0x14a34)!;
+    const baseSepoliaProvider = new ethers.JsonRpcProvider(baseSepolia.rpcUrl);
+    const tokenABI = [
+      "function getScore(address account) view returns (bool, int64)",
+    ];    
+    const reputationContract = new ethers.Contract("0xbD183dD402532f65f851c60cFa54140d7eE4E673", tokenABI, baseSepoliaProvider);
+    const result = await reputationContract.getScore(params.wallet)
+    const verified = result[0];
+    const score = result[1];
+
+    console.log(result)
+    console.log(verified)
+    console.log(score)
+  }
 
   const checkForFunds = async () => {
     var balance: bigint;
@@ -86,7 +126,8 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
+    checkWorldIdVerified();
     checkForFunds().then(() => {
       console.log("has funds:", hasFunds)
       if (!hasFunds && params.currency === 'USDC') {
@@ -94,7 +135,10 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       }
     });
   }, [])
-  
+
+  const worldIdFeedback = async () => {
+  }
+
   const payWithCCIP = async () => {
     if (!window.ethereum) {
       setError('Please install MetaMask to proceed with the payment.');
@@ -115,13 +159,13 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     transferTokens(
-      FundsOtherChain!.ccipName, 
+      FundsOtherChain!.ccipName,
       FundsOtherChain!.rpcUrl,
-      destChain.ccipName as NETWORK, 
+      destChain.ccipName as NETWORK,
       destChain.rpcUrl,
-      params.wallet, 
-      FundsOtherChain!.USDC, 
-      params.amount, 
+      params.wallet,
+      FundsOtherChain!.USDC,
+      params.amount,
       signer)
   }
 
@@ -192,20 +236,20 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       <p>Network: {destChain.name}</p>
       <p>Currenct: {params.currency}</p>
       <p>Amount: {decimalAmount} </p>
-      <button 
-        className="button_pay" 
+      <button
+        className="button_pay"
         onClick={handlePay}
         disabled={!hasFunds}
-        >
-         {hasFunds ? "Pay" : "Insufficient funds"}
+      >
+        {hasFunds ? "Pay" : "Insufficient funds"}
       </button>
       <button
         title="Pay using Chainlink CCIP if you have enough funds"
         className="button_pay"
         onClick={payWithCCIP}
-        disabled={hasFunds || !FundsOtherChain }
+        disabled={hasFunds || !FundsOtherChain}
       >
-        {hasFunds || !FundsOtherChain ?  "Insufficient funds for CCIP" : "Pay with CCIP"}
+        {hasFunds || !FundsOtherChain ? "Insufficient funds for CCIP" : "Pay with CCIP"}
       </button>
       <br></br>
       {/* <Feedback></Feedback> */}
@@ -216,7 +260,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
         // On-chain only accepts Orb verifications
         // verification_level={VerificationLevel.Orb}
         // handleVerify={handleProof}
-        onSuccess={onSuccess}>
+        onSuccess={worldIdFeedback}>
         {({ open }) => (
           <button className="button_spam"
             onClick={open}
@@ -232,7 +276,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
         // On-chain only accepts Orb verifications
         // verification_level={VerificationLevel.Orb}
         // handleVerify={handleProof}
-        onSuccess={onSuccess}>
+        onSuccess={worldIdFeedback}>
         {({ open }) => (
           <button className="button_valid"
             onClick={open}

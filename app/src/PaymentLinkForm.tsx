@@ -1,22 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { ethers } from 'ethers';
 import { chains } from './chains';
-import { IDKitWidget } from "@worldcoin/idkit";
+import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
 import { multiply } from 'lodash';
+import { sign } from 'crypto';
 
 interface PaymentLinkFormProps {
   account: string;
   // connectWallet: () => void;
 }
-
-const onSuccess = (result: any) => {
-  console.log("Proof received from IDKit:\n", JSON.stringify(result));
-  // const unpackedProof = decodeAbiParameters([{ type: 'uint256[8]' }], result.proof)[0]
-  // console.log(unpackedProof)
-  // console.log(result)
-  // This is where you should perform frontend actions once a user has been verified, such as redirecting to a new page
-  window.alert("Successfully verified with World ID! Your nullifier hash is: " + result.nullifier_hash);
-};
 
 const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
   const [walletAddress, setWalletAddress] = useState<string>('');
@@ -33,6 +26,67 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
       setShowModal(false); // Automatically hide modal once the wallet is connected
     }
   }, [account]);
+
+  const worldIdSubmitTx = async (proof: ISuccessResult) => {
+    console.log("Proof received from IDKit:\n", JSON.stringify(proof));
+    if (!window.ethereum) {
+      return;
+    }
+    const base = '0x14a34'
+    if (window.ethereum.networkVersion !== base) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: base }]
+        });
+      } catch (error: any) {
+        console.log(error)
+        return;
+      }
+    }
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const abi = [
+      "function register(address signal, uint256 root, uint256 nullifierHash, uint256[8] calldata proof) external"
+    ];
+    const contract = new ethers.Contract(
+      "0xbD183dD402532f65f851c60cFa54140d7eE4E673",
+      abi,
+      signer
+    );
+    const coder = new ethers.AbiCoder
+  
+    const types = ['uint256[8]'];
+    const decodedData = coder.decode(types, proof.proof)[0];
+    var mutableDecodedData = [...decodedData];
+    const res = await contract.register(
+      signer.address, 
+      BigInt(proof.merkle_root), 
+      BigInt(proof.nullifier_hash),
+      mutableDecodedData,
+    )
+    console.log(res)
+
+    // try {
+    //   await writeContractAsync({
+    //     address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
+    //     account: account.address!,
+    //     abi,
+    //     functionName: 'verifyAndExecute',
+    //     args: [
+    //       account.address!,
+    //       BigInt(proof!.merkle_root),
+    //       BigInt(proof!.nullifier_hash),
+    //       decodeAbiParameters(
+    //         parseAbiParameters('uint256[8]'),
+    //         proof!.proof as `0x${string}`
+    //       )[0],
+    //     ],
+    //   })
+    //   setDone(true)
+    // } catch (error) { throw new Error((error as BaseError).shortMessage) }
+    window.alert("Successfully verified with World ID! Your nullifier hash is: " + proof.nullifier_hash);
+  };
 
   const handleNetworkChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setNetwork(event.target.value)
@@ -95,7 +149,7 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
           // On-chain only accepts Orb verifications
           // verification_level={VerificationLevel.Orb}
           // handleVerify={handleProof}
-          onSuccess={onSuccess}>
+          onSuccess={worldIdSubmitTx}>
           {({ open }) => (
             <button className="button_worldid"
               onClick={open}

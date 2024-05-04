@@ -2,12 +2,16 @@
 body, html {
   height: 100%;
   margin: 0;
-  font-family: 'Londrina Solid', cursive;
+  font-family: 'Londrina Solid';
   background-color: rgb(225, 215, 213);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+h1 {
+  font-size: 300%;
 }
 
 .container {
@@ -28,12 +32,6 @@ body, html {
   justify-content: center;
 }
 
-.eth-symbol {
-  font-family: 'Londrina Solid', cursive;
-  font-size: 20px;
-  margin-right: 5px;
-}
-
 .input, .button {
   padding: 10px;
   border: none;
@@ -42,16 +40,53 @@ body, html {
 }
 
 .input {
-  width: 235px;
+  width: 200px;
+  margin: 1px;
   border: 1px solid #ccc;
-  text-align: center; /* Center text inside the input field */
+  text-align: center; 
 }
-
 
 .button {
   padding: 10px 20px;
   margin: 10px;
-  background-color: #6495ED; /* Example blue color */
+  background-color: #6495ED;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.button_pay {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #6495ED;
+  font-size: 25px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.button_pay:disabled {
+  background-color: grey;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.button_worldid {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #a9bee5;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.button_spam {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: rgb(252, 69, 69);
   color: white;
   border: none;
   border-radius: 5px;
@@ -59,12 +94,31 @@ body, html {
   transition: background-color 0.3s;
 }
 
-.button:hover {
-  background-color: #4169E1; /* Darker blue on hover */
+.button_valid {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #0aee56;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
+.button_currency {
+  padding: 10px 20px;
+  margin: 1px;
+  background-color: lightgray;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 .button:hover {
-  background-color: #4169E1; /* Darker shade when hovered */
+  background-color: #4169E1;
+}
+.button_worldid:hover {
+  background-color: #728fe3cc;
 }
 
 .wallet-address {
@@ -79,39 +133,10 @@ body, html {
   margin-bottom: 10px;
 }
 
-.noun-icon {
-  margin-bottom: 20px;
-  width: 300px;
-  height: auto;
-}
+/* TEMP */
 
-.howto {
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 10px;
-  text-align: center;
-  text-wrap: pretty;
-}
-
-.howto p {
-  margin: 4px 0; /* Adds a small margin between lines for better readability */
-  font-size: 16px; /* Adjust font size if necessary */
-}
-
-/* Responsive Design Adjustments */
-@media (max-width: 600px) {
-  .input, .button {
-      width: 90%; /* Adjust width for smaller screens */
-  }
-  .headline, .howto p {
-      font-size: 18px; /* Adjust font size for readability on small devices */
-  }
-}
-
-/* Original App Styles Adjusted for New Theme */
 .App {
   text-align: center;
-  width: 100%;
 }
 
 .App-logo {
@@ -121,7 +146,7 @@ body, html {
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
-      animation: App-logo-spin infinite 20s linear;
+    animation: App-logo-spin infinite 20s linear;
   }
 }
 
@@ -142,9 +167,9 @@ body, html {
 
 @keyframes App-logo-spin {
   from {
-      transform: rotate(0deg);
+    transform: rotate(0deg);
   }
   to {
-      transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }

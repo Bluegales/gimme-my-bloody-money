@@ -12,8 +12,8 @@ contract WorldCoinExample is Test {
     uint256 internal immutable groupId = 1;
 
     function setUp() public {
-        // worldId = IWorldID(0x42FF98C4E85212a5D31358ACbFe76a621b50fC02);
-        worldId = IWorldID(0x469449f251692E0779667583026b5A1E99512157);
+        worldId = IWorldID(0x42FF98C4E85212a5D31358ACbFe76a621b50fC02);
+        // worldId = IWorldID(0x469449f251692E0779667583026b5A1E99512157);
         string memory _appId = "app_staging_51c06a1df3fa4b5f004db3fb8dfe6569";
         string memory _action = "test";
         externalNullifierHash = abi

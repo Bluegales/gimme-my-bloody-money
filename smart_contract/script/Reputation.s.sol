@@ -15,6 +15,7 @@ contract DeployReputation is Script {
         string memory appId = "app_staging_8ed9ea69fa7c731c134b1ed124d06252";
         int32 reputationPositiveMultiplier = 1;
         int32 reputationNegativeMultiplier = 5;
+        vm.broadcast();
         reputation = new Reputation(
             worldId,
             appId,

@@ -15,20 +15,17 @@ import { Client } from "./typechain-types/Router";
 // pay fees with native token: npx ts-node src/transfer-tokens.ts ethereumSepolia avalancheFuji 0x9d087fC03ae39b088326b67fA3C788236645b717 0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05 100
 
 export const transferTokens = async (
-    sourceChain: NETWORK, 
+    sourceChain: NETWORK,
+    sourceChainRPC: string, 
     destinationChain: NETWORK, 
+    destinationChainRPC: string,
     destinationAccount: string, 
     tokenAddress: string, 
     amount: bigint,
-    signer: ethers.Wallet
+    signer: ethers.Signer
     ) => {
 
-    // Get the RPC URL for the chain from the config
-    const rpcUrl = "asd"//getProviderRpcUrl(sourceChain);
-    // fetch the signer privateKey
-    // const privateKey = //getPrivateKey();
-    // Initialize a provider using the obtained RPC URL
-    const provider = new JsonRpcProvider(rpcUrl);
+    const provider = new JsonRpcProvider(sourceChainRPC);
 
     // Get the router's address for the specified chain
     const { router: sourceRouterAddress, chainSelector: sourceChainSelector } =

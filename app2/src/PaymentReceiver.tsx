@@ -95,8 +95,34 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     });
   }, [])
   
-  const payWithCCIP = async (signer: ethers.Wallet) => {
-    transferTokens("baseSepolia", destChain.ccipName as NETWORK, params.wallet, destChain.USDC, params.amount, signer)
+  const payWithCCIP = async () => {
+    if (!window.ethereum) {
+      setError('Please install MetaMask to proceed with the payment.');
+      return;
+    }
+    const hexnetwork = '0x' + FundsOtherChain!.chainId.toString(16);
+    if (window.ethereum.networkVersion !== hexnetwork) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: hexnetwork }]
+        });
+      } catch (error: any) {
+        setError(`Error switching network: ${error.message}`);
+        return;
+      }
+    }
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    transferTokens(
+      FundsOtherChain!.ccipName, 
+      FundsOtherChain!.rpcUrl,
+      destChain.ccipName as NETWORK, 
+      destChain.rpcUrl,
+      params.wallet, 
+      FundsOtherChain!.USDC, 
+      params.amount, 
+      signer)
   }
 
   const handlePay = async () => {
@@ -170,7 +196,8 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       <button
         title="Pay using Chainlink CCIP if you have enough funds"
         className="button_pay"
-        disabled={!hasFunds}
+        disabled={false}
+        onClick={payWithCCIP}
       >
         Pay with CCIP
       </button>
@@ -217,4 +244,6 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
 
 export default PaymentReceiver;
 
-export { }
+export { };
+
+export { };

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { IDKitWidget } from '@worldcoin/idkit';
-import Feedback from './Feedback';
-import { chains, Network } from './chains';
-// import { chains } from './chains'; // Assumed type for chain
+import { chains, Chains } from './chains';
+import { transferTokens } from './ccip/ccip/src/transfer-token-function'
+import { NETWORK } from './ccip/ccip/src/config'
 
 interface PaymentReceiverProps {
   account: string;
@@ -20,10 +20,10 @@ interface PaymentDetails {
 const query = new URLSearchParams(window.location.search);
 
 const params = {
-  wallet: query.get('wallet'),
-  chainId: query.get('chain-id'),
-  currency: query.get('currency'),
-  amount: query.get('amount'),
+  wallet: query.get('wallet')!,
+  chainId: query.get('chain-id')!,
+  currency: query.get('currency')!,
+  amount: BigInt(query.get('amount')!),
 };
 
 console.log(params);
@@ -44,14 +44,37 @@ const onSuccess = (result: any) => {
   window.alert("Successfully verified with World ID! Your nullifier hash is: " + result.nullifier_hash);
 };
 
-function getPropertyValue<T, K extends keyof T>(obj: T, key: K): T[K] {
-  return obj[key];
-}
-
 const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }) => {
   const [error, setError] = useState<string>('');
+  const [hasFunds, setHasFunds] = useState<boolean>(false);
+  const [FundsOtherChain, HasFundsOtherChain] = useState<string>("0");
 
-  const foundChain = chains.find(chain => chain.chainId === Number(params.chainId))!;
+  const destChain = chains.find(chain => chain.chainId === Number(params.chainId))!;
+  console.log(destChain.rpcUrl)
+  const destChainProvider = new ethers.JsonRpcProvider(destChain.rpcUrl);
+
+  const currency = params.currency as keyof Chains
+  const tokenAddress = destChain[currency] as string;
+  const tokenABI = [
+      "function balanceOf(address owner) view returns (uint256)",
+      "function transfer(address to, uint amount) returns (bool)"
+  ];
+  const tokenContract = new ethers.Contract(tokenAddress, tokenABI, destChainProvider);
+  tokenContract.balanceOf(params.wallet).then((balance) => {
+    const balanceNumber = BigInt(balance)
+    console.log("found: " + balance + "tokens")
+    if (balanceNumber >= params.amount) {
+      setHasFunds(true);
+    } else {
+      setHasFunds(false);
+    }
+  }).catch((error) => {
+    console.error("Failed to get balance:", error);
+  });
+  
+  const payWithCCIP = async (signer: ethers.Wallet) => {
+    transferTokens("baseSepolia", destChain.ccipName as NETWORK, params.wallet, destChain.USDC, params.amount, signer)
+  }
 
   const handlePay = async () => {
     if (!window.ethereum) {
@@ -76,24 +99,16 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       if (params.currency === 'ETH') {
         const transaction = {
           to: params.wallet!,
-          value: ethers.parseEther(params.amount!),
+          value: params.amount,
           chainId: parseInt(params.chainId!)
         };
         const txResponse = await signer.sendTransaction(transaction);
         console.log('Transaction sent:', txResponse);
       } else {
         // assume erc20
-        console.log(params.chainId)
-        console.log(Number(params.chainId))
-        const foundChain = chains.find(chain => chain.chainId === Number(params.chainId))!;
-        const currency = params.currency as keyof Network
-        const tokenAddress = foundChain[currency] as string;
-        console.log(tokenAddress)
-        const tokenABI = [
-            "function balanceOf(address owner) view returns (uint256)",
-            "function transfer(address to, uint amount) returns (bool)"
-        ];
-        const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+        
+        
+
         try {
             const transaction = await tokenContract.transfer(params.wallet, params.amount);
             console.log('Transaction hash:', transaction.hash);
@@ -121,7 +136,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     <div>
       <h1>Payment Details</h1>
       <p>Wallet Address: {params.wallet}</p>
-      <p>Network: {foundChain.name}</p>
+      <p>Network: {destChain.name}</p>
       <p>Currenct: {params.currency}</p>
       <p>Amount: {decimalAmount} </p>
       <button className="button_pay" onClick={handlePay}>Pay</button>
@@ -167,3 +182,5 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
 };
 
 export default PaymentReceiver;
+
+export {}

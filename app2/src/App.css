@@ -36,7 +36,8 @@ body, html {
 }
 
 .input {
-  width: 235px;
+  width: 200px;
+  margin: 1px;
   border: 1px solid #ccc;
   text-align: center; 
 }
@@ -62,8 +63,20 @@ body, html {
   transition: background-color 0.3s;
 }
 
+.button_currency {
+  padding: 10px 20px;
+  margin: 1px;
+  background-color: lightgray;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 .button:hover {
   background-color: #4169E1;
+}
+.button_worldid:hover {
+  background-color: #728fe3cc;
 }
 
 .wallet-address {

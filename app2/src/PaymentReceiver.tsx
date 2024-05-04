@@ -116,7 +116,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       <h1>Payment Details</h1>
       <p>Wallet Address: {params.wallet}</p>
       <p>Network: {params.chainId}</p>
-      <p>Amount: {params.amount} ETH</p>
+      <p>Amount: {params.amount}</p>
       <button className="button" onClick={handlePay}>Pay</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>

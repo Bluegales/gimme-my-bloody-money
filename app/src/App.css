@@ -53,6 +53,7 @@ p {
 
 .input {
   width: 200px;
+  font-family: 'Londrina Solid';
   margin: 1px;
   border: 1px solid #ccc;
   text-align: center; 

@@ -164,7 +164,7 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
             <option value="ETH">ETH</option>
             <option value="USDC">USDC</option>
           </select>
-          <p className="wallet-address">Amount in USD: ${amountUSD}</p>
+          {/* <p className="wallet-address">Amount in USD: ${amountUSD}</p> */}
           <button className="button" onClick={generateLink}>Generate Link</button>
           {link && (
             <div>

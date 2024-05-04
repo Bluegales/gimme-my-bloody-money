@@ -10,23 +10,7 @@ interface PaymentReceiverProps {
   setAccount: (account: string) => void;
 }
 
-interface PaymentDetails {
-  wallet: string | null;
-  chainId: string | null;
-  currency: string | null;
-  amount: string | null;
-}
-
 const query = new URLSearchParams(window.location.search);
-
-
-
-// const handleOpenModal = () => {
-//   const updatedSignal = "0xNEW_UPDATED_SIGNAL_HASH"; // Example to update the signal
-//   Feedback.
-//   setSignal(updatedSignal);
-//   setIsModalOpen(true);
-// };
 
 const onSuccess = (result: any) => {
   console.log("Proof received from IDKit:\n", JSON.stringify(result));
@@ -38,40 +22,78 @@ const onSuccess = (result: any) => {
 };
 
 const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }) => {
+  const [error, setError] = useState<string>('');
+  const [hasFunds, setHasFunds] = useState<boolean>(false);
+  const [FundsOtherChain, setFundsOtherChain] = useState<Chains | null>(null);
+
   const params = {
     wallet: query.get('wallet')!,
     chainId: query.get('chain-id')!,
     currency: query.get('currency')!,
     amount: BigInt(query.get('amount')!),
   };
-  console.log(params);
-
-  const [error, setError] = useState<string>('');
-  const [hasFunds, setHasFunds] = useState<boolean>(false);
-  const [FundsOtherChain, HasFundsOtherChain] = useState<string>("0");
-
   const destChain = chains.find(chain => chain.chainId === Number(params.chainId))!;
-  console.log(destChain.rpcUrl)
   const destChainProvider = new ethers.JsonRpcProvider(destChain.rpcUrl);
 
-  const currency = params.currency as keyof Chains
-  const tokenAddress = destChain[currency] as string;
-  const tokenABI = [
-      "function balanceOf(address owner) view returns (uint256)",
-      "function transfer(address to, uint amount) returns (bool)"
-  ];
-  const tokenContract = new ethers.Contract(tokenAddress, tokenABI, destChainProvider);
-  tokenContract.balanceOf(params.wallet).then((balance) => {
-    const balanceNumber = BigInt(balance)
+  const checkForFunds = async () => {
+    var balance: bigint;
+    if (params.currency == 'ETH') {
+      balance = await destChainProvider.getBalance(params.wallet);
+    } else {
+      const currency = params.currency as keyof Chains
+      const tokenAddress = destChain[currency] as string;
+      const tokenABI = [
+        "function balanceOf(address owner) view returns (uint256)",
+        "function transfer(address to, uint amount) returns (bool)"
+      ];
+      const tokenContract = new ethers.Contract(tokenAddress, tokenABI, destChainProvider);
+      const b = await tokenContract.balanceOf(params.wallet)
+      balance = BigInt(b)
+    }
     console.log("found: " + balance + "tokens")
-    if (balanceNumber >= params.amount) {
+    if (balance >= params.amount) {
       setHasFunds(true);
     } else {
       setHasFunds(false);
     }
-  }).catch((error) => {
-    console.error("Failed to get balance:", error);
-  });
+  }
+
+  const checkForFundsOtherChains = async () => {
+    var testchains: number[] = []
+    if (destChain.chainId === 0x14a34 || destChain.chainId === 0xaa36a7) {
+      testchains = testchains.concat([0x14a34, 0xaa36a7])
+    } else {
+      testchains = testchains.concat([0x2105, 0xa, 0xa4b1, 0x1])
+    }
+    console.log('trying to find funds on chains:', testchains)
+    for (var chainid of testchains) {
+      const sourceChain = chains.find(chain => chain.chainId === chainid)!;
+      const sourceChainProvider = new ethers.JsonRpcProvider(sourceChain.rpcUrl);
+      const currency = params.currency as keyof Chains
+      const tokenAddress = sourceChain[currency] as string;
+      const tokenABI = [
+        "function balanceOf(address owner) view returns (uint256)",
+        "function transfer(address to, uint amount) returns (bool)"
+      ];
+      const tokenContract = new ethers.Contract(tokenAddress, tokenABI, sourceChainProvider);
+      const b = await tokenContract.balanceOf(params.wallet)
+      const balance = BigInt(b)
+      if (balance >= params.amount) {
+        setFundsOtherChain(sourceChain as Chains);
+        console.log("found founds on chain:", sourceChain)
+        return
+      }
+    }
+  }
+
+  useEffect(()=>{
+    checkForFunds().then(() => {
+      console.log("has funds:", hasFunds)
+      if (!hasFunds && params.currency === 'USDC') {
+        checkForFundsOtherChains();
+      }
+    });
+  }, [])
   
   const payWithCCIP = async (signer: ethers.Wallet) => {
     transferTokens("baseSepolia", destChain.ccipName as NETWORK, params.wallet, destChain.USDC, params.amount, signer)
@@ -107,23 +129,27 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
         console.log('Transaction sent:', txResponse);
       } else {
         // assume erc20
-        
-        
-
+        const currency = params.currency as keyof Chains
+        const tokenAddress = destChain[currency] as string;
+        const tokenABI = [
+          "function balanceOf(address owner) view returns (uint256)",
+          "function transfer(address to, uint amount) returns (bool)"
+        ];
+        const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
         try {
-            const transaction = await tokenContract.transfer(params.wallet, params.amount);
-            console.log('Transaction hash:', transaction.hash);
-            const receipt = await transaction.wait();
-            console.log('Transaction confirmed in block:', receipt.blockNumber);
+          const transaction = await tokenContract.transfer(params.wallet, params.amount);
+          console.log('Transaction hash:', transaction.hash);
+          const receipt = await transaction.wait();
+          console.log('Transaction confirmed in block:', receipt.blockNumber);
         } catch (error) {
-            console.error('Transfer failed:', error);
+          console.error('Transfer failed:', error);
         }
       }
     } catch (err: any) {
       console.error("Error while sending transaction:", err);
       setError(`Payment failed: ${err.message}`);
     }
-      // TODO check currency
+    // TODO check currency
   };
 
   var decimalAmount = Number(params.amount)
@@ -144,36 +170,36 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       <br></br>
       {/* <Feedback></Feedback> */}
       <IDKitWidget
-          app_id="app_staging_51c06a1df3fa4b5f004db3fb8dfe6569"
-          action="test"
-          signal="0x1"
-          // On-chain only accepts Orb verifications
-          // verification_level={VerificationLevel.Orb}
-          // handleVerify={handleProof}
-          onSuccess={onSuccess}>
-          {({ open }) => (
-            <button className="button_spam"
-              onClick={open}
-            >
-              Mark as spam
-            </button>
-          )}
+        app_id="app_staging_51c06a1df3fa4b5f004db3fb8dfe6569"
+        action="test"
+        signal="0x1"
+        // On-chain only accepts Orb verifications
+        // verification_level={VerificationLevel.Orb}
+        // handleVerify={handleProof}
+        onSuccess={onSuccess}>
+        {({ open }) => (
+          <button className="button_spam"
+            onClick={open}
+          >
+            Mark as spam
+          </button>
+        )}
       </IDKitWidget>
       <IDKitWidget
-          app_id="app_staging_51c06a1df3fa4b5f004db3fb8dfe6569"
-          action="test"
-          signal="0x0"
-          // On-chain only accepts Orb verifications
-          // verification_level={VerificationLevel.Orb}
-          // handleVerify={handleProof}
-          onSuccess={onSuccess}>
-          {({ open }) => (
-            <button className="button_valid"
-              onClick={open}
-            >
-              Mark as valid
-            </button>
-          )}
+        app_id="app_staging_51c06a1df3fa4b5f004db3fb8dfe6569"
+        action="test"
+        signal="0x0"
+        // On-chain only accepts Orb verifications
+        // verification_level={VerificationLevel.Orb}
+        // handleVerify={handleProof}
+        onSuccess={onSuccess}>
+        {({ open }) => (
+          <button className="button_valid"
+            onClick={open}
+          >
+            Mark as valid
+          </button>
+        )}
       </IDKitWidget>
       {/* <button onClick={feedbackSpam}>Mark as spam</button>
       <button onClick={feedbackLegit}>Mark as legit</button> */}
@@ -184,4 +210,4 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
 
 export default PaymentReceiver;
 
-export {}
+export { }

@@ -205,7 +205,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
         onClick={payWithCCIP}
         disabled={hasFunds || !FundsOtherChain }
       >
-        {hasFunds || !FundsOtherChain ?  "Insufficient funds for CCIP" : "Pay with CCIP"}
+        {hasFunds || !FundsOtherChain ?  "CCIP" : "Pay with CCIP"}
       </button>
       <br></br>
       {/* <Feedback></Feedback> */}

@@ -4,7 +4,6 @@ import { IDKitWidget, ISuccessResult } from '@worldcoin/idkit';
 import { chains, Chains } from './chains';
 import { transferTokens } from './ccip/ccip/src/transfer-token-function'
 import { NETWORK } from './ccip/ccip/src/config'
-import { boolean } from 'yargs';
 
 interface PaymentReceiverProps {
   account: string;
@@ -47,6 +46,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
 
   const checkForFunds = async () => {
     if (!window.ethereum) {
+      console.log("could not check funds")
       return;
     }
     const provider = new ethers.BrowserProvider(window.ethereum);

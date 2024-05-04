@@ -25,7 +25,7 @@ const App: React.FC = () => {
     <Router>
       <div>
         <center>
-          <h1>GimmeMeMyBloody.Money</h1>
+          <h1>GimmeMyBloody.Money</h1>
           <img src="./noun_gun.png" width="200" alt="Get Nound!"></img>
           {/* Render ConnectWallet only if account is not set */}
           {!account && <ConnectWallet setAccount={setAccount} />}

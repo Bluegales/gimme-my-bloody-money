@@ -19,14 +19,7 @@ interface PaymentDetails {
 
 const query = new URLSearchParams(window.location.search);
 
-const params = {
-  wallet: query.get('wallet')!,
-  chainId: query.get('chain-id')!,
-  currency: query.get('currency')!,
-  amount: BigInt(query.get('amount')!),
-};
 
-console.log(params);
 
 // const handleOpenModal = () => {
 //   const updatedSignal = "0xNEW_UPDATED_SIGNAL_HASH"; // Example to update the signal
@@ -45,6 +38,14 @@ const onSuccess = (result: any) => {
 };
 
 const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }) => {
+  const params = {
+    wallet: query.get('wallet')!,
+    chainId: query.get('chain-id')!,
+    currency: query.get('currency')!,
+    amount: BigInt(query.get('amount')!),
+  };
+  console.log(params);
+
   const [error, setError] = useState<string>('');
   const [hasFunds, setHasFunds] = useState<boolean>(false);
   const [FundsOtherChain, HasFundsOtherChain] = useState<string>("0");

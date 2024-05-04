@@ -110,6 +110,12 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       // TODO check currency
   };
 
+  var decimalAmount = Number(params.amount)
+  if (params.currency === 'ETH') {
+    decimalAmount /= 10 ** 18;
+  } else if (params.currency === 'USDC') {
+    decimalAmount /= 10 ** 6;
+  }
 
   return (
     <div>
@@ -117,7 +123,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       <p>Wallet Address: {params.wallet}</p>
       <p>Network: {foundChain.name}</p>
       <p>Currenct: {params.currency}</p>
-      <p>Amount: {params.amount} </p>
+      <p>Amount: {decimalAmount} </p>
       <button className="button_pay" onClick={handlePay}>Pay</button>
       <br></br>
       {/* <Feedback></Feedback> */}

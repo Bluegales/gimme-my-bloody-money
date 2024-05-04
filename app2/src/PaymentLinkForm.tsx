@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { chains } from './chains';
 import { IDKitWidget } from "@worldcoin/idkit";
+import { multiply } from 'lodash';
 
 interface PaymentLinkFormProps {
   account: string;
@@ -61,7 +62,13 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
   const generateLink = () => {
     const baseUrl = 'http://localhost:3000/pay';
     const hexnetwork = '0x' + Number(network).toString(16);
-    const newLink = `${baseUrl}?wallet=${walletAddress}&chain-id=${hexnetwork}&currency=${currency}&amount=${amountETH}`;
+    var multiplier = 1;
+    if (currency === 'ETH') {
+      multiplier = 18;
+    } else if (currency === 'USDC') {
+      multiplier = 6;
+    }
+    const newLink = `${baseUrl}?wallet=${walletAddress}&chain-id=${hexnetwork}&currency=${currency}&amount=${Number(amountETH) * 10 ** multiplier}`;
     setLink(newLink);
   };
 

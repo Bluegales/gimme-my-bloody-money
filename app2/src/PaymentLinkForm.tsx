@@ -95,7 +95,7 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
           // handleVerify={handleProof}
           onSuccess={onSuccess}>
           {({ open }) => (
-            <button
+            <button className="button_worldid"
               onClick={open}
             >
               Verify with World ID
@@ -103,7 +103,6 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
           )}
       </IDKitWidget>
           <div className="input-group">
-            <span className="eth-symbol">Ξ</span>
             <input
               type="text"
               className="input"
@@ -117,17 +116,17 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
               <option key={key} value={key}>{name}</option>
             ))}
           </select>
-          <select value={currency} onChange={handleCurrencyChange}>
-            <option value="ETH">ETH</option>
-            <option value="USDC">USDC</option>
-          </select>
           <input
             type="number"
             className="input"
             value={amountETH}
             onChange={handleAmountChange}
-            placeholder="Amount in ETH"
+            placeholder="eg. 0.0002"
           />
+          <select className="button_currency" value={currency} onChange={handleCurrencyChange}>
+            <option value="ETH">ETH</option>
+            <option value="USDC">USDC</option>
+          </select>
           <p className="wallet-address">Amount in USD: ${amountUSD}</p>
           <button className="button" onClick={generateLink}>Generate Link</button>
           {link && (

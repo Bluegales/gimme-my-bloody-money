@@ -115,7 +115,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       <p>Network: {params.chainId}</p>
       <p>Currenct: {params.currency}</p>
       <p>Amount: {params.amount} </p>
-      <button onClick={handlePay}>Pay</button>
+      <button className="button" onClick={handlePay}>Pay</button>
       <Feedback></Feedback>
       <IDKitWidget
           app_id="app_staging_51c06a1df3fa4b5f004db3fb8dfe6569"

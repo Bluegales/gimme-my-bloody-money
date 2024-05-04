@@ -269,7 +269,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
         )}
       </div>
       <p>Wallet Address: {params.wallet}</p>
-      <p><pre> {decimalAmount} {params.currency}  ({destChain.name})</pre> </p>
+      <pre> {decimalAmount} {params.currency}  ({destChain.name})</pre>
       <p>--------------------</p>
       <button
         className="button_pay"

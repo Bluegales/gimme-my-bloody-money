@@ -66,25 +66,6 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
       mutableDecodedData,
     )
     console.log(res)
-
-    // try {
-    //   await writeContractAsync({
-    //     address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
-    //     account: account.address!,
-    //     abi,
-    //     functionName: 'verifyAndExecute',
-    //     args: [
-    //       account.address!,
-    //       BigInt(proof!.merkle_root),
-    //       BigInt(proof!.nullifier_hash),
-    //       decodeAbiParameters(
-    //         parseAbiParameters('uint256[8]'),
-    //         proof!.proof as `0x${string}`
-    //       )[0],
-    //     ],
-    //   })
-    //   setDone(true)
-    // } catch (error) { throw new Error((error as BaseError).shortMessage) }
     window.alert("Successfully verified with World ID! Your nullifier hash is: " + proof.nullifier_hash);
   };
 
@@ -144,7 +125,7 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
         <>
         <IDKitWidget
           app_id="app_staging_51c06a1df3fa4b5f004db3fb8dfe6569"
-          action="test"
+          action="register"
           signal="0x11118B057bC0F7cBCF85f1e4d6B61CD5fFB22773"
           // On-chain only accepts Orb verifications
           // verification_level={VerificationLevel.Orb}

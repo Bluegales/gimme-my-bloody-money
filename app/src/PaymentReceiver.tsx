@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { IDKitWidget } from '@worldcoin/idkit';
+import { IDKitWidget, ISuccessResult } from '@worldcoin/idkit';
 import { chains, Chains } from './chains';
 import { transferTokens } from './ccip/ccip/src/transfer-token-function'
 import { NETWORK } from './ccip/ccip/src/config'
+import { boolean } from 'yargs';
 
 interface PaymentReceiverProps {
   account: string;
@@ -12,43 +13,13 @@ interface PaymentReceiverProps {
 
 const query = new URLSearchParams(window.location.search);
 
-// async function executeContractFunction() {
-//   try {
-//     // Ensure the signer is connected
-//     const signer = provider.getSigner();
-
-//     // Initialize the contract
-//     const contract = new ethers.Contract(
-//       process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-//       abi,
-//       signer
-//     );
-
-//     // Call the smart contract function
-//     const tx = await contract.verifyAndExecute(
-//       account.address!,
-//       BigInt(proof!.merkle_root).toString(),
-//       BigInt(proof!.nullifier_hash).toString(),
-//       decodeAbiParameters(
-//         parseAbiParameters('uint256[8]'),
-//         proof!.proof
-//       )[0]
-//     );
-
-//     // Wait for the transaction to be mined
-//     await tx.wait();
-//     setDone(true);
-//   } catch (error) {
-//     // Basic error handling; adapt as necessary for your use case
-//     console.error(error);
-//     throw new Error(error.reason || "Failed to execute the contract function.");
-//   }
-// }
-
 const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }) => {
   const [error, setError] = useState<string>('');
   const [hasFunds, setHasFunds] = useState<boolean>(false);
   const [FundsOtherChain, setFundsOtherChain] = useState<Chains | null>(null);
+  const [positiveFeedback, setpositiveFeedback] = useState<boolean>(true);
+  const [isVerified, setIsVerified] = useState<boolean>(true);
+  const [reputationScore, setReputationScore] = useState<number>(0);
 
   const params = {
     wallet: query.get('wallet')!,
@@ -69,10 +40,8 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     const result = await reputationContract.getScore(params.wallet)
     const verified = result[0];
     const score = result[1];
-
-    console.log(result)
-    console.log(verified)
-    console.log(score)
+    setIsVerified(verified)
+    setReputationScore(score)
   }
 
   const checkForFunds = async () => {
@@ -136,7 +105,48 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     });
   }, [])
 
-  const worldIdFeedback = async () => {
+  const worldIdFeedback = async (proof: ISuccessResult) => {
+    console.log("Proof received from IDKit:\n", JSON.stringify(proof));
+    if (!window.ethereum) {
+      return;
+    }
+    const base = '0x14a34'
+    if (window.ethereum.networkVersion !== base) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: base }]
+        });
+      } catch (error: any) {
+        console.log(error)
+        return;
+      }
+    }
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const abi = [
+      "function feedback(address signal, address account, uint256 root, uint256 nullifierHash, uint256[8] calldata proof) external"
+    ];
+    const contract = new ethers.Contract(
+      "0xbD183dD402532f65f851c60cFa54140d7eE4E673",
+      abi,
+      signer
+    );
+    const coder = new ethers.AbiCoder;
+  
+    const types = ['uint256[8]'];
+    const signal = positiveFeedback ? "0x0000000000000000000000000000000000000001" : "0x0000000000000000000000000000000000000000";
+    const decodedData = coder.decode(types, proof.proof)[0];
+    var mutableDecodedData = [...decodedData];
+    const res = await contract.feedback(
+      signal,
+      params.wallet,
+      BigInt(proof.merkle_root), 
+      BigInt(proof.nullifier_hash),
+      mutableDecodedData,
+    )
+    console.log(res);
+    window.alert("Successfully verified with World ID! Your nullifier hash is: " + proof.nullifier_hash);
   }
 
   const payWithCCIP = async () => {
@@ -229,6 +239,10 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     decimalAmount /= 10 ** 6;
   }
 
+  function setFeedbackAndOpen(feedback: boolean, open: () => void) {
+
+  }
+
   return (
     <div>
       <h2>Payment Details</h2>
@@ -252,37 +266,28 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
         {hasFunds || !FundsOtherChain ?  "CCIP" : "Pay with CCIP"}
       </button>
       <br></br>
-      {/* <Feedback></Feedback> */}
       <IDKitWidget
         app_id="app_staging_51c06a1df3fa4b5f004db3fb8dfe6569"
-        action="test"
+        action={"vote" + params.wallet}
+        // signal={positiveFeedback? "0x1" : "0x0"}
         signal="0x1"
         // On-chain only accepts Orb verifications
         // verification_level={VerificationLevel.Orb}
         // handleVerify={handleProof}
         onSuccess={worldIdFeedback}>
         {({ open }) => (
+          <div>
           <button className="button_spam"
-            onClick={open}
-          >
+            onClick={() => {setpositiveFeedback(false); open()}}
+            >
             Mark as spam
           </button>
-        )}
-      </IDKitWidget>
-      <IDKitWidget
-        app_id="app_staging_51c06a1df3fa4b5f004db3fb8dfe6569"
-        action="test"
-        signal="0x0"
-        // On-chain only accepts Orb verifications
-        // verification_level={VerificationLevel.Orb}
-        // handleVerify={handleProof}
-        onSuccess={worldIdFeedback}>
-        {({ open }) => (
           <button className="button_valid"
-            onClick={open}
+          onClick={() => {setpositiveFeedback(true); open()}}
           >
-            Mark as valid
+          Mark as valid
           </button>
+          </div>
         )}
       </IDKitWidget>
       {/* <button onClick={feedbackSpam}>Mark as spam</button>

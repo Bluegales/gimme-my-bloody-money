@@ -60,7 +60,7 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
   };
 
   const generateLink = () => {
-    const baseUrl = 'http://localhost:3000/pay';
+    const baseUrl = window.location.origin + '/pay';
     const hexnetwork = '0x' + Number(network).toString(16);
     var multiplier = 1;
     if (currency === 'ETH') {

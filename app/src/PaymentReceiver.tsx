@@ -18,7 +18,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
   const [hasFunds, setHasFunds] = useState<boolean>(false);
   const [FundsOtherChain, setFundsOtherChain] = useState<Chains | null>(null);
   const [positiveFeedback, setpositiveFeedback] = useState<boolean>(true);
-  const [isVerified, setIsVerified] = useState<boolean>(true);
+  const [isVerified, setIsVerified] = useState<boolean>(false);
   const [reputationScore, setReputationScore] = useState<number | null>(null);
 
   const params = {

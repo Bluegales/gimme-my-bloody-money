@@ -52,11 +52,43 @@ body, html {
   cursor: pointer;
   transition: background-color 0.3s;
 }
+.button_pay {
+  padding: 20px 40px;
+  margin: 10px;
+  background-color: #6495ED;
+  font-size: 30px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 .button_worldid {
   padding: 10px 20px;
   margin: 10px;
   background-color: #a9bee5;
   color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.button_spam {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: rgb(252, 69, 69);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button_valid {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #0aee56;
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;

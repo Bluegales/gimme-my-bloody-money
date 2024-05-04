@@ -192,14 +192,20 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       <p>Network: {destChain.name}</p>
       <p>Currenct: {params.currency}</p>
       <p>Amount: {decimalAmount} </p>
-      <button className="button_pay" onClick={handlePay}>Pay</button>
+      <button 
+        className="button_pay" 
+        onClick={handlePay}
+        disabled={!hasFunds}
+        >
+         {hasFunds ? "Pay" : "Insufficient funds"}
+      </button>
       <button
         title="Pay using Chainlink CCIP if you have enough funds"
         className="button_pay"
-        disabled={false}
         onClick={payWithCCIP}
+        disabled={hasFunds || !FundsOtherChain }
       >
-        Pay with CCIP
+        {hasFunds || !FundsOtherChain ?  "Insufficient funds for CCIP" : "Pay with CCIP"}
       </button>
       <br></br>
       {/* <Feedback></Feedback> */}

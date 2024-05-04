@@ -19,7 +19,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
   const [FundsOtherChain, setFundsOtherChain] = useState<Chains | null>(null);
   const [positiveFeedback, setpositiveFeedback] = useState<boolean>(true);
   const [isVerified, setIsVerified] = useState<boolean>(true);
-  const [reputationScore, setReputationScore] = useState<number>(0);
+  const [reputationScore, setReputationScore] = useState<number | null>(null);
 
   const params = {
     wallet: query.get('wallet')!,
@@ -243,9 +243,27 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
 
   }
 
-  return (
+  return (  
     <div>
-      <h2>Payment Details</h2>
+      <h2>Payment Details</h2> 
+      
+      <div>
+        {reputationScore! < 0 && (
+          <div>
+            <p>❌ Spam, bad reputation. Not very nounish.</p>
+          </div>
+        )}
+        {reputationScore == 0 && (
+          <div>
+            <p>🟠 SUS, no reputation. Make sure you know the person</p>
+          </div>
+        )}
+        {reputationScore! > 0 && (
+          <div>
+            <p>✅ Looks great. Good reputation. Trustworthy requester. Grade A Nouner.</p>
+          </div>
+        )}
+      </div>
       <p>Wallet Address: {params.wallet}</p>
       <p>Network: {destChain.name}</p>
       <p>Currenct: {params.currency}</p>

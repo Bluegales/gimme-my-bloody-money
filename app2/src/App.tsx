@@ -25,18 +25,19 @@ const App: React.FC = () => {
     <Router>
       <div>
         <center>
-        <h1>GiveMeMyBloody.Money</h1>
-        <img src="./noun_gun.png" width="200"></img>
-        <ConnectWallet setAccount={setAccount} />
-        <Routes>
-          <Route path="/" element={account ? (
-            <>
-              {/* <p>Connected Account: {account}</p> */}
-              <PaymentLinkForm account={account} />
-            </>
-          ) : null} />
-          <Route path="/pay" element={<PaymentReceiver account={account} setAccount={setAccount} />} />
-        </Routes>
+          <h1>GiveMeMyBloody.Money</h1>
+          <img src="./noun_gun.png" width="200" alt="App Icon"></img>
+          {/* Render ConnectWallet only if account is not set */}
+          {!account && <ConnectWallet setAccount={setAccount} />}
+          <Routes>
+            <Route path="/" element={account ? (
+              <>
+                {/* <p>Connected Account: {account}</p> */}
+                <PaymentLinkForm account={account} />
+              </>
+            ) : null} />
+            <Route path="/pay" element={<PaymentReceiver account={account} setAccount={setAccount} />} />
+          </Routes>
         </center>
       </div>
     </Router>

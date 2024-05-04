@@ -2,7 +2,7 @@
 body, html {
   height: 100%;
   margin: 0;
-  font-family: 'Londrina Solid', cursive;
+  font-family: 'Londrina Solid';
   background-color: rgb(225, 215, 213);
   display: flex;
   flex-direction: column;

@@ -134,7 +134,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
 
   return (
     <div>
-      <h1>Payment Details</h1>
+      <h2>Payment Details</h2>
       <p>Wallet Address: {params.wallet}</p>
       <p>Network: {destChain.name}</p>
       <p>Currenct: {params.currency}</p>

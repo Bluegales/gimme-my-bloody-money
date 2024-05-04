@@ -51,6 +51,8 @@ function getPropertyValue<T, K extends keyof T>(obj: T, key: K): T[K] {
 const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }) => {
   const [error, setError] = useState<string>('');
 
+  const foundChain = chains.find(chain => chain.chainId === Number(params.chainId))!;
+
   const handlePay = async () => {
     if (!window.ethereum) {
       setError('Please install MetaMask to proceed with the payment.');
@@ -108,11 +110,12 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
       // TODO check currency
   };
 
+
   return (
     <div>
       <h1>Payment Details</h1>
       <p>Wallet Address: {params.wallet}</p>
-      <p>Network: {params.chainId}</p>
+      <p>Network: {foundChain.name}</p>
       <p>Currenct: {params.currency}</p>
       <p>Amount: {params.amount} </p>
       <button className="button" onClick={handlePay}>Pay</button>

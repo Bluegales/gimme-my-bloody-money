@@ -17,12 +17,6 @@ const onSuccess = (result: any) => {
   window.alert("Successfully verified with World ID! Your nullifier hash is: " + result.nullifier_hash);
 };
 
-const networks: { [key: string]: string } = {
-  '0x1': 'Mainnet',
-  '0xaa36a7': 'Sepolia',
-  '0x14a34': 'Base Sepolia'
-};
-
 const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
   const [walletAddress, setWalletAddress] = useState<string>('');
   const [network, setNetwork] = useState<string>('0x1');
@@ -40,7 +34,7 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
   }, [account]);
 
   const handleNetworkChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setNetwork(event.target.value);
+    setNetwork(event.target.value)
   };
 
   const handleCurrencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -66,7 +60,8 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
 
   const generateLink = () => {
     const baseUrl = 'http://localhost:3000/pay';
-    const newLink = `${baseUrl}?wallet=${walletAddress}&chain-id=${network}&currency=${currency}&amount=${amountETH}`;
+    const hexnetwork = '0x' + Number(network).toString(16);
+    const newLink = `${baseUrl}?wallet=${walletAddress}&chain-id=${hexnetwork}&currency=${currency}&amount=${amountETH}`;
     setLink(newLink);
   };
 
@@ -112,10 +107,10 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ account }) => {
             />
           </div>
           <select className="input" value={network} onChange={handleNetworkChange}>
-            {Object.entries(networks).map(([key, name]) => (
-              <option key={key} value={key}>{name}</option>
+            {chains.map((net) => (
+                <option key={net.chainId} value={net.chainId}>{net.name}</option>
             ))}
-          </select>
+        </select>
           <input
             type="number"
             className="input"

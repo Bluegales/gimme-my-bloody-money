@@ -42,12 +42,18 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
     const score = result[1];
     setIsVerified(verified)
     setReputationScore(score)
+    console.log(reputationScore)
   }
 
   const checkForFunds = async () => {
+    if (!window.ethereum) {
+      return;
+    }
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
     var balance: bigint;
     if (params.currency == 'ETH') {
-      balance = await destChainProvider.getBalance(params.wallet);
+      balance = await destChainProvider.getBalance(signer.address);
     } else {
       const currency = params.currency as keyof Chains
       const tokenAddress = destChain[currency] as string;
@@ -68,6 +74,11 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
   }
 
   const checkForFundsOtherChains = async () => {
+    if (!window.ethereum) {
+      return;
+    }
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
     var testchains: number[] = []
     if (destChain.chainId === 0x14a34 || destChain.chainId === 0xaa36a7) {
       testchains = testchains.concat([0x14a34, 0xaa36a7])
@@ -85,7 +96,7 @@ const PaymentReceiver: React.FC<PaymentReceiverProps> = ({ account, setAccount }
         "function transfer(address to, uint amount) returns (bool)"
       ];
       const tokenContract = new ethers.Contract(tokenAddress, tokenABI, sourceChainProvider);
-      const b = await tokenContract.balanceOf(params.wallet)
+      const b = await tokenContract.balanceOf(signer.address)
       const balance = BigInt(b)
       if (balance >= params.amount) {
         setFundsOtherChain(sourceChain as Chains);

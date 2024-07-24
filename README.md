@@ -1,7 +1,12 @@
-# gimme-my-bloody-money
+<h1>Gimme My Bloody Money 💰</h1>
+<h3>Created for EthGlobal Sydney 2024</h3>
+
 This project creates a straightforward way of requesting money. Users can generate a link, which others can click to directly sign the correct transaction.
 
 ## DEMO: **[gimmemybloody.money](https://gimmemybloody.money/)**
+## Project Page: **[EthGlobal](https://ethglobal.com/showcase/gimmemybloodymoney-vi6xx)**
+
+<img src="prizes.png" alt="Prizes">
 
 ## description
 This project simplifies the process of requesting money through a straightforward, two-page online system.
